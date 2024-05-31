@@ -45,6 +45,8 @@ databaseChangeLog:
                   name: house_id
                   type: BIGINT
                   constraints:
+
+
                     nullable: true
 
   - changeSet:

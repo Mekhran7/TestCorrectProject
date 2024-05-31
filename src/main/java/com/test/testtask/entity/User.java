@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.management.relation.Role;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +36,7 @@ public class User {
     @JsonBackReference //не должно быть серилизовано(обратная сторона)
     @JsonInclude
     private House house;
+
 
     public User(String name, int age, String password) {
         this.name = name;
