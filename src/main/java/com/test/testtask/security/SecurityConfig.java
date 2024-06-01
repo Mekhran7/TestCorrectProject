@@ -18,10 +18,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean //return реализацию  UserDetailsService которая загружает пользователя по имени
-    public UserDetailsService userDetailsService() {
-        return new CustomUserDetailsService();
-    }
+//    @Bean //return реализацию  UserDetailsService которая загружает пользователя по имени
+//    public UserDetailsService userDetailsService() {
+//        return new CustomUserDetailsService(); //при использовании этого бина выбрасывается StackOverFlowError
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -29,7 +29,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 

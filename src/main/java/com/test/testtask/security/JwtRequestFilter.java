@@ -37,7 +37,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
             username = jwtUtil.extractUsername(jwt);
         }
-        //если  username существует и пользователь еще не аутентифицирован
+        //если username существует и пользователь еще не аутентифицирован
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
         //проверка валидности токена
