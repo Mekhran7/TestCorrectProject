@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,7 +47,7 @@ public class HouseController {
     public void deleteHouse(@PathVariable int id) {houseService.deleteHouse(id);}
 
     @Operation(summary ="добавление пользователя в дом" ,description = "позволяет домавлять пользователей в дом")
-    @PostMapping("/{houseId}/residents/{userId}")
+    @PostMapping("{houseId}/residents/{userId}")
     public ResponseEntity<Void> addResident(@PathVariable int houseId, @PathVariable int userId) {
         houseService.addResident(houseId, userId);
         return ResponseEntity.ok().build();
