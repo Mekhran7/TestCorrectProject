@@ -18,6 +18,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.any;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -89,8 +91,12 @@ class HouseControllerTest {
     @Test
     void addResident() throws Exception {
         House house=new House(1,"A-5",2);
-        User user=new User(3,"Dima",20,"pass123");
-        mockMvc.perform(post("/api/houses/1/residents/3"))
+        User owner=new User(2,"Dima",20,"passW123");
+        User userToAdd=new User(5,"Kolya",20,"word123");
+
+
+        mockMvc.perform(post("/api/houses/1/residents/5"))
                 .andExpect(status().isOk());
+        verify(houseService,times(1)).addResident(1,5);
     }
 }

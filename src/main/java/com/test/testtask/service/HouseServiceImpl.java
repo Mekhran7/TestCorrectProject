@@ -50,8 +50,11 @@ public class HouseServiceImpl implements HouseService{
     @Override
     public void addResident(int houseId, int userId) {
         House house = houseRepository.findById(houseId).orElseThrow(()->new IllegalArgumentException("house not found"));
-        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("user not found"));
-        house.addUserToHouse(user);
-        houseRepository.save(house);
+        User owner=userRepository.findById(house.getOwnerId()).orElseThrow(()->new IllegalArgumentException("owner not found"));
+        User userToAdd = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("user not found"));
+        if (owner.getId()==house.getOwnerId()) {
+            house.addUserToHouse(userToAdd);
+            houseRepository.save(house);
+        }
     }
 }
