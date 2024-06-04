@@ -10,5 +10,5 @@ public interface HouseService {
     public House createHouse(House house);
     public House updateHouse(int id, House houseDetails);
     public void deleteHouse(int id);
-    public void addResident(int houseId, int userId);
+    public void addResident(int houseId, int userId,int requesterId);
 }

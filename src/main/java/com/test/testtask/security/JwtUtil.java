@@ -20,6 +20,15 @@ public class JwtUtil {
     public String extractUsername(String token) { //извлечение username
         return extractClaim(token, Claims::getSubject);
     }
+    public int extractUserId(String token) {
+        final Claims claims = extractAllClaims(token);
+        Integer userId= claims.get("userId", Integer.class);
+        if (userId==null){
+            throw new IllegalArgumentException("Invalid token: userId is missing");
+        }
+        return userId;
+    }
+
 
     public Date extractExpiration(String token) {//извлечение даты
         return extractClaim(token, Claims::getExpiration);
@@ -38,13 +47,14 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails) { //генерация токена
+    public String generateToken(UserDetails userDetails,int userId) { //генерация токена
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername());
+        return createToken(claims, userDetails.getUsername(),userId);
     }
 
-    private String createToken(Map<String, Object> claims, String subject) { //создание токена
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+    private String createToken(Map<String, Object> claims, String subject,int userId) { //создание токена
+        return Jwts.builder().setClaims(claims).setSubject(subject).claim("userId",userId)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }

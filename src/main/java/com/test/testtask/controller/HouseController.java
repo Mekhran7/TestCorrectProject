@@ -1,6 +1,7 @@
 package com.test.testtask.controller;
 
 import com.test.testtask.entity.House;
+import com.test.testtask.security.JwtUtil;
 import com.test.testtask.service.HouseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +19,8 @@ public class HouseController {
 
     @Autowired
     private HouseService houseService;
+    @Autowired
+    JwtUtil jwtUtil;
 
     @GetMapping("/getAllHouses")
     public List<House> getAllHouses() {
@@ -48,8 +51,11 @@ public class HouseController {
 
     @Operation(summary ="добавление пользователя в дом" ,description = "позволяет домавлять пользователей в дом")
     @PostMapping("{houseId}/residents/{userId}")
-    public ResponseEntity<Void> addResident(@PathVariable int houseId, @PathVariable int userId) {
-        houseService.addResident(houseId, userId);
+    public ResponseEntity<Void> addResident(@PathVariable int houseId, @PathVariable int userId,
+                                           @RequestHeader("Authorization") String token) {
+        token=token.substring(7);
+        int requesterId= jwtUtil.extractUserId(token);
+        houseService.addResident(houseId, userId,requesterId);
         return ResponseEntity.ok().build();
     }
 }

@@ -2,6 +2,7 @@ package com.test.testtask.controller;
 
 import com.test.testtask.entity.House;
 import com.test.testtask.entity.User;
+import com.test.testtask.security.JwtUtil;
 import com.test.testtask.service.HouseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,26 +19,30 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.any;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class HouseControllerTest {
-    private MockMvc mockMvc;
+    private MockMvc mockMvc;//для выполнения http запросов к контроллеру
     @Mock
     private HouseService houseService;
+    @Mock
+    private JwtUtil jwtUtil;
     @InjectMocks
     private HouseController houseController;
 
     @BeforeEach
     void setUp(){
         MockitoAnnotations.openMocks(this);
+        //настраиваает MockMvc для работы с указанным контроллером
         this.mockMvc= MockMvcBuilders.standaloneSetup(houseController).build();
     }
     @Test
     void getAllHouses() throws Exception {
         List<House> houses= Arrays.asList(new House("A-5",1),new House("B-5",2));
+        //when и given используются для настройки поведения моков, ни указывабт что возвращать
+        //при вызове определенных методов
         given(houseService.getAllHouses()).willReturn(houses);
         mockMvc.perform(get("/api/houses/getAllHouses"))
                 .andExpect(status().isOk())
@@ -55,7 +60,7 @@ class HouseControllerTest {
         mockMvc.perform(get("/api/houses/getHouse/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.address",is("A-5")))
-                .andExpect(jsonPath("$.ownerId",is(2)));
+                .andExpect(jsonPath("$.ownerId",is(2)));//для проверки структуры и содержимого Json ответа
     }
 
     @Test
@@ -87,16 +92,26 @@ class HouseControllerTest {
         mockMvc.perform(delete("/api/houses/deleteHouse/1"))
                 .andExpect(status().isOk());
     }
-
     @Test
     void addResident() throws Exception {
-        House house=new House(1,"A-5",2);
-        User owner=new User(2,"Dima",20,"passW123");
-        User userToAdd=new User(5,"Kolya",20,"word123");
+        String token = "Bearer ourJwtToken";
+        int houseId = 1;
+        int userId = 1;
+        int requesterId = 1;
 
+        // Мокируем JwtUtil для возврата requesterId из токена
+        given(jwtUtil.extractUserId(token.substring(7))).willReturn(requesterId);
 
-        mockMvc.perform(post("/api/houses/1/residents/5"))
+        // Мокируем HouseService для успешного выполнения метода addResident
+        doNothing().when(houseService).addResident(houseId, userId, requesterId);
+
+        mockMvc.perform(post("/api/houses/" + houseId + "/residents/" + userId)
+                        .header("Authorization", token))
                 .andExpect(status().isOk());
-        verify(houseService,times(1)).addResident(1,5);
-    }
+
+        // Проверяем, что метод addResident был вызван с правильными аргументами
+        verify(houseService).addResident(houseId, userId, requesterId);
+}
+
+
 }

@@ -82,11 +82,13 @@ public class UserServiceImplTest {
 
     @Test
     void testUpdateUser() {
+
         User existingUser = new User("Dima", 30, "password1");
         existingUser.setId(1);
         User updatedDetails = new User("Dmitriy", 31, "newpassword");
 
         when(userRepository.findById(1)).thenReturn(Optional.of(existingUser));
+        //это имитирует сохранение обновленного пользователя в бд
         when(userRepository.save(existingUser)).thenReturn(existingUser);
 
         User result = userServiceImpl.updateUser(1, updatedDetails);

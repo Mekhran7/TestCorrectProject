@@ -1,5 +1,7 @@
 package com.test.testtask.security;
 
+import com.test.testtask.entity.User;
+import com.test.testtask.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +23,9 @@ public class AuthenticationController {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @PostMapping("/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest)
             throws Exception {
@@ -36,8 +41,13 @@ public class AuthenticationController {
 
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
+        User user=userRepository.findByName(authenticationRequest.getUsername());
+        if (user==null){
+            throw new IllegalArgumentException("user not found");
+        }
+        int userId=user.getId();
 
-        final String jwt = jwtUtil.generateToken(userDetails);
+        final String jwt = jwtUtil.generateToken(userDetails,userId);
 
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }

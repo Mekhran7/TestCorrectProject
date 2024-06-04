@@ -16,17 +16,19 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 class HouseServiceImplTest {
-    @InjectMocks
+    @InjectMocks// это озночает что нужно создать объект HouseServiceImpl и внедрить моки houseRepository и userRepository
+    // в его зависимости
     private HouseServiceImpl houseServiceImpl;
-    @Mock
+    @Mock //озночат что надо создать моки для замены реальных объектов
     private HouseRepository houseRepository;
     @Mock
     private UserRepository userRepository;
     @BeforeEach
-    void setUp(){MockitoAnnotations.openMocks(this);}
+    void setUp(){MockitoAnnotations.openMocks(this);}//инициализирует моки перед выполнением каждого теста
 
     @Test
     void getAllHouses() {
@@ -84,13 +86,71 @@ class HouseServiceImplTest {
     }
 
     @Test
-    void addResident() {
-        House house=new House("A-5",1);
-        User user=new User("Dima",25,"password");
-        when(houseRepository.findById(1)).thenReturn(Optional.of(house));
-        when(userRepository.findById(1)).thenReturn(Optional.of(user));
-        houseServiceImpl.addResident(1,1);
-        verify(houseRepository,times(1)).save(house);
-        assertTrue(house.getUsers().contains(user));
+    void testAddResident_HouseNotFound() {
+        given(houseRepository.findById(1)).willReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            houseServiceImpl.addResident(1, 1, 1);
+        });
+
+        assertEquals("house is not fount", exception.getMessage());
     }
+    @Test
+    void testAddResident_UserNotFound() {
+        House house = new House();
+        house.setHouseId(1);
+        house.setOwnerId(1);
+
+        given(houseRepository.findById(1)).willReturn(Optional.of(house));
+        given(userRepository.findById(1)).willReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            houseServiceImpl.addResident(1, 1, 1);
+        });
+
+        assertEquals("user is not found", exception.getMessage());
+    }
+    @Test
+    void testAddResident_RequesterIsNotOwner() {
+        House house = new House();
+        house.setHouseId(1);
+        house.setOwnerId(2);
+
+        User user = new User();
+        user.setId(1);
+
+        given(houseRepository.findById(1)).willReturn(Optional.of(house));
+        given(userRepository.findById(1)).willReturn(Optional.of(user));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            houseServiceImpl.addResident(1, 1, 1);
+        });
+
+        assertEquals("only owner can add users to house", exception.getMessage());
+    }
+    @Test
+    void testAddResident_Success() {
+        House house = new House();
+        house.setHouseId(1);
+        house.setOwnerId(1);
+
+        User user = new User();
+        user.setId(1);
+        // задаем поведение то есть настраиваем поведение мок-объектов при вызове определенных методов
+        given(houseRepository.findById(1)).willReturn(Optional.of(house));
+        given(userRepository.findById(1)).willReturn(Optional.of(user));
+
+        houseServiceImpl.addResident(1, 1, 1);
+
+        verify(houseRepository, times(1)).save(house);
 }
+
+
+}
+/*
+использование моков позволяет изолировать тестируемый метод от
+его зависимостей (houseRepository и userRepository). путем создания замещающих объектов(моков)
+эти методы имитируют поведение реальных объектов, но дают возможность контролировать их состояние и поведение
+Это означает, что тесты проверяют только логику метода,
+а не взаимодействие с базой данных или другие внешние системы
+ */
