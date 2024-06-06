@@ -13,6 +13,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 @Component //будет перехватывать все входящие HTTP запросы для проверки валидности JWT токенов
@@ -27,7 +28,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-    //получение хидер Authorization из запроса
+        //получение хидер Authorization из запроса
         final String authorizationHeader = request.getHeader("Authorization");
 
         String username = null;
@@ -40,7 +41,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         //если username существует и пользователь еще не аутентифицирован
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-        //проверка валидности токена
+            //проверка валидности токена
             if (jwtUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

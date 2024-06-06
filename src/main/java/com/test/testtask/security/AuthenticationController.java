@@ -41,13 +41,13 @@ public class AuthenticationController {
 
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
-        User user=userRepository.findByName(authenticationRequest.getUsername());
-        if (user==null){
+        User user = userRepository.findByName(authenticationRequest.getUsername());
+        if (user == null) {
             throw new IllegalArgumentException("user not found");
         }
-        int userId=user.getId();
+        int userId = user.getId();
 
-        final String jwt = jwtUtil.generateToken(userDetails,userId);
+        final String jwt = jwtUtil.generateToken(userDetails, userId);
 
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
