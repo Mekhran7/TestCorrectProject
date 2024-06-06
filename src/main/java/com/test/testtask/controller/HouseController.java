@@ -27,11 +27,12 @@ public class HouseController {
         return houseService.getAllHouses();
     }
 
-    @Operation(summary = "получение дома",description = "позволяет получать дом по ID")
-    @GetMapping("/getHouse/{id}")
+    @Operation(summary = "получение дома", description = "позволяет получать дом по ID")
+    @GetMapping("/{id}")
     public ResponseEntity<House> getHouseById(@PathVariable int id) {
         House house = houseService.getHouseById(id);
-        return house != null ? ResponseEntity.ok(house) : ResponseEntity.notFound().build();}
+        return house != null ? ResponseEntity.ok(house) : ResponseEntity.notFound().build();
+    }
 
     @Operation(summary = "создание дома", description = "позволяет создавать дома")
     @PostMapping("/createHouse")
@@ -39,23 +40,26 @@ public class HouseController {
         return houseService.createHouse(house);
     }
 
-    @Operation(summary ="изменение дома" ,description = "позволяет изменять дом по ID")
-    @PutMapping("/updateHouse/{id}")
+    @Operation(summary = "изменение дома", description = "позволяет изменять дом по ID")
+    @PutMapping("/{id}")
     public ResponseEntity<House> updateHouse(@PathVariable int id, @RequestBody House houseDetails) {
         House updatedHouse = houseService.updateHouse(id, houseDetails);
-        return updatedHouse != null ? ResponseEntity.ok(updatedHouse) : ResponseEntity.notFound().build();}
+        return updatedHouse != null ? ResponseEntity.ok(updatedHouse) : ResponseEntity.notFound().build();
+    }
 
-    @Operation(summary ="удаление дома" ,description = "позволяет удалять дома по ID")
-    @DeleteMapping("/deleteHouse/{id}")
-    public void deleteHouse(@PathVariable int id) {houseService.deleteHouse(id);}
+    @Operation(summary = "удаление дома", description = "позволяет удалять дома по ID")
+    @DeleteMapping("/{id}")
+    public void deleteHouse(@PathVariable int id) {
+        houseService.deleteHouse(id);
+    }
 
-    @Operation(summary ="добавление пользователя в дом" ,description = "позволяет домавлять пользователей в дом")
+    @Operation(summary = "добавление пользователя в дом", description = "позволяет домавлять пользователей в дом")
     @PostMapping("{houseId}/residents/{userId}")
     public ResponseEntity<Void> addResident(@PathVariable int houseId, @PathVariable int userId,
-                                           @RequestHeader("Authorization") String token) {
-        token=token.substring(7);
-        int requesterId= jwtUtil.extractUserId(token);
-        houseService.addResident(houseId, userId,requesterId);
+                                            @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
+        int requesterId = jwtUtil.extractUserId(token);
+        houseService.addResident(houseId, userId, requesterId);
         return ResponseEntity.ok().build();
     }
 }

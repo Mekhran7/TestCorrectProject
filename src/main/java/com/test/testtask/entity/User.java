@@ -30,8 +30,8 @@ public class User {
     private int age;
     @Column(name = "password")
     private String password;
-    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST
-            ,CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST
+            , CascadeType.REFRESH})
     @JoinColumn(name = "house_id")
     @JsonBackReference //не должно быть серилизовано(обратная сторона)
     @JsonInclude

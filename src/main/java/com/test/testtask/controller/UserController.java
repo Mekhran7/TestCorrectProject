@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @Operation(summary = "получение пользователя",description = "позволяет получать пользователя по ID из БД")
-    @GetMapping("/getUser/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
         User user = userService.getUserById(id);
         return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();}
@@ -38,13 +38,13 @@ public class UserController {
         return userService.createUser(user);}
 
     @Operation(summary = "изменение пользователя по ID",description = "позволяет изменять пользователя по ID в БД")
-    @PutMapping("/updateUser/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody User userDetails) {
         User updatedUser = userService.updateUser(id, userDetails);
         return updatedUser != null ? ResponseEntity.ok(updatedUser) : ResponseEntity.notFound().build();}
 
     @Operation(summary = "удаление пользователя",description = "позволяет удалять пользователя по ID из БД")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable int id) {
        userService.deleteUser(id);
     }

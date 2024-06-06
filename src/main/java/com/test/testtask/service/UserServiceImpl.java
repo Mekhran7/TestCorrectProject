@@ -9,20 +9,23 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
     @Transactional
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
     @Transactional
     @Override
     public User getUserById(int id) {
-        return userRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("user is not found"));
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("user is not found"));
     }
+
     @Transactional
     @Override
     public User createUser(User user) {
@@ -32,7 +35,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     @Override
     public User updateUser(int id, User userDetails) {
-        User user = userRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("user is not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("user is not found"));
         if (user != null) {
             user.setName(userDetails.getName());
             user.setAge(userDetails.getAge());
@@ -41,6 +44,7 @@ public class UserServiceImpl implements UserService{
         }
         return user;
     }
+
     @Transactional
     @Override
     public void deleteUser(int id) {
